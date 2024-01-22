@@ -1,0 +1,92 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<BHeader Title="Home" />
+
+<BContent Padding="true">
+    <h5>Temperature</h5>
+    <BDivider Line="true"/>
+    <BRow>
+        <BCol>
+            Regular Oven
+        </BCol>
+        <BCol>
+            Hot air Oven
+        </BCol>
+        <BCol>
+            Airfryer
+        </BCol>
+    </BRow>
+
+    <BRow>
+        <BCol>
+            <input class="form-control" type="number" @bind="heatCalculation.RegularOven" @bind:after="@(() => Calculate(CalculateByRegularOven))" />
+            &deg;C
+        </BCol>
+        <BCol>
+            <input class="form-control" type="number" @bind="heatCalculation.HotAirOven" @bind:after="@(() => Calculate(CalculateByHotAirOven))" />
+            &deg;C
+        </BCol>
+        <BCol>
+            <input class="form-control" type="number" @bind="heatCalculation.AirFryer" disabled="true" />
+            &deg;C
+        </BCol>
+    </BRow>
+
+    <BDivider Size="3"/>
+    <h5>Time</h5>
+    <BDivider Line="true" />
+
+    <BRow>
+        <BCol>
+            Regular Oven
+        </BCol>
+        <BCol>
+            Airfryer
+        </BCol>
+    </BRow>
+    <BRow>
+        <BCol>
+            <input class="form-control" type="number" @bind="minuteCalculation.RegularOven" @bind:after="@(() => CalculateMinutes(CalculateByRegularOven))" />
+            Min.
+        </BCol>
+        <BCol>
+            <input class="form-control" type="number" @bind="minuteCalculation.AirFryer" @bind:after="@(() => CalculateMinutes(CalculateByHotAirOven))" />
+            Min.
+        </BCol>
+    </BRow>
+</BContent>
+
+@code {
+    private string CalculateByRegularOven = "regular";
+    private string CalculateByHotAirOven = "hot_air";
+
+    private HeatCalculation heatCalculation = new HeatCalculation();
+    private MinuteCalculation minuteCalculation = new MinuteCalculation();
+
+    private HeatCalculator heatCalculator = new HeatCalculator();
+    private MinuteCalculator minuteCalculator = new MinuteCalculator();
+
+    protected override async Task OnInitializedAsync()
+    {
+        heatCalculation = heatCalculator.Calculate(null, 180);
+        minuteCalculation = minuteCalculator.Calculate(null, 10);
+    }
+
+    void Calculate(string oven)
+    {
+        if(oven == CalculateByRegularOven)
+            heatCalculation = heatCalculator.Calculate(heatCalculation.RegularOven, null);
+        else
+            heatCalculation = heatCalculator.Calculate(null, heatCalculation.HotAirOven);
+    }
+
+    void CalculateMinutes(string oven)
+    {
+        if (oven == CalculateByRegularOven)
+            minuteCalculation = minuteCalculator.Calculate(minuteCalculation.RegularOven, null);
+        else
+            minuteCalculation = minuteCalculator.Calculate(null, minuteCalculation.AirFryer);
+    }
+}
