@@ -1,6 +1,6 @@
 {
-  "name": "AirFryer.Client",
-  "short_name": "AirFryer.Client",
+  "name": "AirFryer Time Calculator",
+  "short_name": "AirFryer Calc",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
@@ -8,6 +8,18 @@
   "theme_color": "#03173d",
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
     {
       "src": "icon-512.png",
       "type": "image/png",

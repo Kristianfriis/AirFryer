@@ -1,0 +1,31 @@
+﻿<td class="@(Weekday == SelectedDate ? "border bg-body-secondary" : "")" @onclick="@(() => ChooseDay(Weekday.Year, Weekday.Month, WeekNumber, Weekday.Day))">
+    @Weekday.Day
+</td>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public DateTime Weekday { get; set; }
+
+    [Parameter]
+    public DateTime? SelectedDate { get; set; }
+
+    [Parameter]
+    public int WeekNumber { get; set; }
+
+    [Parameter]
+    public EventCallback<BTableDataEvent> OnDatePicked { get; set; }
+
+    public async Task ChooseDay(int year, int month, int weekNumber, int day)
+    {
+        var dateEvent = new BTableDataEvent()
+        {
+            Year = year,
+            Month = month,
+            WeekNumber = weekNumber,
+            Day = day
+        };
+
+        await OnDatePicked.InvokeAsync(dateEvent);
+    }
+}

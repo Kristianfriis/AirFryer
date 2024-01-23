@@ -2,5 +2,15 @@
 <BApplicationDarkMode />
 <BApp>
     @Body
+
+    <BFooter>
+        <BTabbar>
+            <BTab Href="@(RouteConstants.HomeView)" MatchAll="true" Name="Home" Icon="bi bi-house"></BTab>
+            <BTab Href="@(RouteConstants.TimesView)" Name="Times" Icon="bi bi-list-task"></BTab>
+            <BTab Href="@(RouteConstants.MonthView)" Name="Times" Icon="bi bi-list-task"></BTab>
+            <BTab Href="@(RouteConstants.MonthViewV2)" Name="Times" Icon="bi bi-list-task"></BTab>
+        </BTabbar>
+    </BFooter>
+
     <BToast />
 </BApp>

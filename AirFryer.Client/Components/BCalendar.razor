@@ -1,0 +1,178 @@
+﻿<div class="d-flex justify-content-center">
+    <BRow>
+        <BCol>
+            <BRow OnClick="PreviousMonth">
+                <BCol>
+                    <BIcon Icon="bi bi-chevron-left" />
+                    <p class="align-self-center text-center" style="margin: 0;">Previous</p>
+                </BCol>
+            </BRow>
+        </BCol>
+
+        <BCol>
+            @if (ChosenMonth2 != null)
+            {
+                var month = ChosenMonth2.FirstOrDefault();
+                <p class="align-self-center text-center" style="margin: 0;">@month.ToString("MMMM") @month.Year</p>
+            }
+        </BCol>
+
+        <BCol>
+            <BRow OnClick="NextMonth">
+                <BCol>
+                    <p class="align-self-center text-center" style="margin: 0;">Next</p>
+                    <BIcon Icon="bi bi-chevron-right" />
+                </BCol>
+            </BRow>
+        </BCol>
+
+    </BRow>
+</div>
+
+<table border="1" class="table">
+    <thead>
+        <tr class="text-center">
+            <th scope="col">Mon</th>
+            <th scope="col">Tue</th>
+            <th scope="col">Wed</th>
+            <th scope="col">Thu</th>
+            <th scope="col">Fri</th>
+            <th scope="col">Sat</th>
+            <th scope="col">Sun</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ChosenMonth2 != null)
+        {
+            var groupByWeeks = ChosenMonth2.GroupBy(x => GetIso8601WeekOfYear(x));
+            @foreach (var week in groupByWeeks)
+            {
+                <tr class="text-center">
+                    @foreach (var weekDay in week)
+                    {
+                        if (weekDay.Day == 1)
+                        {
+                            if (weekDay.DayOfWeek != DayOfWeek.Sunday)
+                            {
+                                for (int i = 1; i < (int)weekDay.DayOfWeek; i++)
+                                {
+                                    <td></td>
+                                }
+                                <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                            }
+                            else
+                            {
+                                for (int i = 1; i < (int)DayOfWeek.Saturday + 1; i++)
+                                {
+                                    <td></td>
+                                }
+                                <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                            }
+                        }
+                        else
+                        {
+                            <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                        }
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private Month? ChosenMonth { get; set; }
+    private List<DateTime>? ChosenMonth2 { get; set; }
+    private List<Month>? GeneratedMonths { get; set; }
+
+    public DateTime SelectedDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime> OnDatePicked { get; set; }
+
+    private IEnumerable<IGrouping<int, DateTime>>? GeneratedMonths2;
+
+    private int year = 2022; // You can replace this with the desired year
+    private int month = 1;
+
+    protected override void OnInitialized()
+    {
+        year = DateTime.UtcNow.Year;
+
+        GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+
+        if (GeneratedMonths2 != null)
+            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+    }
+
+    private async Task ChooseDay(int year, int month, int weekNumber, int day)
+    {
+        SelectedDate = new DateTime(year, month, day);
+        await OnDatePicked.InvokeAsync(SelectedDate);
+        // Handle the click event if needed
+    }    
+    private async Task ChooseDay(BTableDataEvent eventArg)
+    {
+        SelectedDate = new DateTime(eventArg.Year, eventArg.Month, eventArg.Day);
+        await OnDatePicked.InvokeAsync(SelectedDate);
+        // Handle the click event if needed
+    }
+
+    public static int GetIso8601WeekOfYear(DateTime time)
+    {
+        // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll
+        // be the same week# as whatever Thursday, Friday or Saturday are,
+        // and we always get those right
+        DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
+        if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
+        {
+            time = time.AddDays(3);
+        }
+
+        // Return the week of our adjusted day
+        return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    }
+
+    public static (int year, int month) GetYearAndMonth(DateTime? date)
+    {
+        if (date == null)
+            return (0, 0);
+
+        return (date.Value.Year, date.Value.Month);
+    }
+
+    private void PreviousMonth()
+    {
+        if (month == 1)
+        {
+            year -= 1;
+            month = 12;
+
+            GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+        }
+        else
+        {
+            month -= 1;
+        }
+        if (GeneratedMonths2 != null)
+            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+    }
+
+    private void NextMonth()
+    {
+        if (month == 12)
+        {
+            year += 1;
+            month = 1;
+
+            GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+        }
+        else
+        {
+            month += 1;
+        }
+
+        if (GeneratedMonths2 != null)
+            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+    }
+}

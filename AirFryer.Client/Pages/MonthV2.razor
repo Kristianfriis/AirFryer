@@ -1,0 +1,16 @@
+﻿@attribute [Route(RouteConstants.MonthViewV2)]
+
+<PageTitle>Month View</PageTitle>
+
+<BHeader Title="Month View" />
+
+<BContent Padding="true">
+    <BCalendar OnDatePicked="DatePicked" />
+</BContent>
+
+@code {
+    private void DatePicked(DateTime value)
+    {
+        Console.WriteLine(value);
+    }
+}
