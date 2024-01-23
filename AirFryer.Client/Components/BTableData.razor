@@ -1,5 +1,7 @@
 ﻿<td class="@(Weekday == SelectedDate ? "border bg-body-secondary" : "")" @onclick="@(() => ChooseDay(Weekday.Year, Weekday.Month, WeekNumber, Weekday.Day))">
-    @Weekday.Day
+    <span class="@SetElevatedClass()">
+        @Weekday.Day
+    </span>
 </td>
 
 @code {
@@ -10,11 +12,21 @@
     [Parameter]
     public DateTime? SelectedDate { get; set; }
 
+    [CascadingParameter]
+    private BCalendar? Parent { get; set; }
+
     [Parameter]
     public int WeekNumber { get; set; }
 
     [Parameter]
     public EventCallback<BTableDataEvent> OnDatePicked { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Parent == null)
+            throw new NullReferenceException("BTableData has to be within a BCalendar component");
+
+    }
 
     public async Task ChooseDay(int year, int month, int weekNumber, int day)
     {
@@ -27,5 +39,16 @@
         };
 
         await OnDatePicked.InvokeAsync(dateEvent);
+    }
+
+    private string SetElevatedClass()
+    {
+        if (Parent!.ElevatedDates == null)
+            return "";
+
+        if (Parent!.ElevatedDates.Contains(x => x == Weekday))
+            return "elevated";
+
+        return "";
     }
 }

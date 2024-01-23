@@ -5,10 +5,15 @@
 <BHeader Title="Month View" />
 
 <BContent Padding="true">
-    <BCalendar OnDatePicked="DatePicked" />
+    <BCalendar OnDatePicked="DatePicked" ElevatedDates="testDates" />
 </BContent>
 
 @code {
+    private List<DateTime> testDates = new List<DateTime>()
+    {
+        DateTime.Now    
+    };
+
     private void DatePicked(DateTime value)
     {
         Console.WriteLine(value);

@@ -1,4 +1,5 @@
-﻿<div class="d-flex justify-content-center">
+﻿<CascadingValue Value="this">
+<div class="d-flex justify-content-center">
     <BRow>
         <BCol>
             <BRow OnClick="PreviousMonth">
@@ -79,6 +80,7 @@
         }
     </tbody>
 </table>
+</CascadingValue>
 
 @code {
     private Month? ChosenMonth { get; set; }
@@ -89,6 +91,9 @@
 
     [Parameter]
     public EventCallback<DateTime> OnDatePicked { get; set; }
+
+    [Parameter]
+    public List<DateTime>? ElevatedDates { get; set; }
 
     private IEnumerable<IGrouping<int, DateTime>>? GeneratedMonths2;
 
