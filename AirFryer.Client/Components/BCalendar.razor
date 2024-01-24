@@ -11,9 +11,9 @@
         </BCol>
 
         <BCol>
-            @if (ChosenMonth2 != null)
+            @if (ChosenMonth != null)
             {
-                var month = ChosenMonth2.FirstOrDefault();
+                var month = ChosenMonth.FirstOrDefault();
                 <p class="align-self-center text-center" style="margin: 0;">@month.ToString("MMMM") @month.Year</p>
             }
         </BCol>
@@ -43,9 +43,9 @@
         </tr>
     </thead>
     <tbody>
-        @if (ChosenMonth2 != null)
+        @if (ChosenMonth != null)
         {
-            var groupByWeeks = ChosenMonth2.GroupBy(x => GetIso8601WeekOfYear(x));
+            var groupByWeeks = ChosenMonth.GroupBy(x => GetIso8601WeekOfYear(x));
             @foreach (var week in groupByWeeks)
             {
                 <tr class="text-center">
@@ -59,7 +59,14 @@
                                 {
                                     <td></td>
                                 }
-                                <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                    if (RowTemplate is not null)
+                                    {
+                                        <tr>@RowTemplate(weekDay)</tr>
+                                    } 
+                                    else
+                                    {
+                                        <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                    }
                             }
                             else
                             {
@@ -67,12 +74,26 @@
                                 {
                                     <td></td>
                                 }
-                                <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                    if (RowTemplate is not null)
+                                    {
+                                        <tr>@RowTemplate(weekDay)</tr>
+                                    }
+                                    else
+                                    {
+                                        <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                    }
                             }
                         }
                         else
                         {
-                            <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                if (RowTemplate is not null)
+                                {
+                                    <tr>@RowTemplate(weekDay)</tr>
+                                }
+                                else
+                                {
+                                    <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                }
                         }
                     }
                 </tr>
@@ -83,9 +104,8 @@
 </CascadingValue>
 
 @code {
-    private Month? ChosenMonth { get; set; }
-    private List<DateTime>? ChosenMonth2 { get; set; }
-    private List<Month>? GeneratedMonths { get; set; }
+    private List<DateTime>? ChosenMonth { get; set; }
+    private IEnumerable<IGrouping<int, DateTime>>? GeneratedMonths;
 
     public DateTime SelectedDate { get; set; }
 
@@ -95,19 +115,22 @@
     [Parameter]
     public List<DateTime>? ElevatedDates { get; set; }
 
-    private IEnumerable<IGrouping<int, DateTime>>? GeneratedMonths2;
+    [Parameter]
+    public RenderFragment<DateTime>? RowTemplate { get; set; }
 
     private int year = 2022; // You can replace this with the desired year
     private int month = 1;
 
     protected override void OnInitialized()
     {
-        year = DateTime.UtcNow.Year;
+        var now = DateTime.UtcNow;
+        year = now.Year;
+        month = now.Month;
 
-        GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+        GeneratedMonths = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
 
-        if (GeneratedMonths2 != null)
-            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+        if (GeneratedMonths != null)
+            ChosenMonth = GeneratedMonths.Single(g => g.Key == month).ToList();
     }
 
     private async Task ChooseDay(int year, int month, int weekNumber, int day)
@@ -153,14 +176,14 @@
             year -= 1;
             month = 12;
 
-            GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+            GeneratedMonths = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
         }
         else
         {
             month -= 1;
         }
-        if (GeneratedMonths2 != null)
-            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+        if (GeneratedMonths != null)
+            ChosenMonth = GeneratedMonths.Single(g => g.Key == month).ToList();
     }
 
     private void NextMonth()
@@ -170,14 +193,14 @@
             year += 1;
             month = 1;
 
-            GeneratedMonths2 = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
+            GeneratedMonths = new DateTime(year, 1, 1).Range(new DateTime(year, 12, 31)).GroupBy(x => x.Month);
         }
         else
         {
             month += 1;
         }
 
-        if (GeneratedMonths2 != null)
-            ChosenMonth2 = GeneratedMonths2.Single(g => g.Key == month).ToList();
+        if (GeneratedMonths != null)
+            ChosenMonth = GeneratedMonths.Single(g => g.Key == month).ToList();
     }
 }

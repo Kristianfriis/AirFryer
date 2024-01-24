@@ -1,13 +1,7 @@
 ﻿<td class="@ClassFactory()" @onclick="@(() => ChooseDay(Weekday.Year, Weekday.Month, WeekNumber, Weekday.Day))">
-    <BRow>
-        <span class="@SetElevatedClass()">
-            @Weekday.Day
-        </span>
-        @if(Icon != null)
-        {
-            <BIcon Icon="bi bi-check2-circle" Size="1" FullWidth="true" />
-        }
-    </BRow>
+    <span>
+        @Weekday.Day
+    </span>
 </td>
 
 @code {
@@ -27,10 +21,7 @@
     [Parameter]
     public EventCallback<BTableDataEvent> OnDatePicked { get; set; }
 
-    [Parameter]
-    public string? Icon { get; set; }
-
-    private DateTime today = DateTime.UtcNow; 
+    private DateTime today = DateTime.UtcNow;
 
     protected override void OnInitialized()
     {
@@ -42,27 +33,14 @@
     public async Task ChooseDay(int year, int month, int weekNumber, int day)
     {
         var dateEvent = new BTableDataEvent()
-        {
-            Year = year,
-            Month = month,
-            WeekNumber = weekNumber,
-            Day = day
-        };
+            {
+                Year = year,
+                Month = month,
+                WeekNumber = weekNumber,
+                Day = day
+            };
 
         await OnDatePicked.InvokeAsync(dateEvent);
-    }
-
-    private string SetElevatedClass()
-    {
-        if (Parent!.ElevatedDates == null)
-            return "";
-
-        if (Parent!.ElevatedDates.Any(x => x.Date.CompareTo(Weekday.Date) == 0))
-        {
-            return "elevated";
-        }
-
-        return "";
     }
 
     private string ClassFactory()
@@ -79,7 +57,7 @@
             if (Weekday.Date.CompareTo(SelectedDate.Value.Date) == 0)
                 result = $"{result} border bg-body-secondary";
         }
-       
+
         return result;
     }
 }
