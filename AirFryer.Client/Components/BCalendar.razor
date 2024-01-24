@@ -57,16 +57,20 @@
                             {
                                 for (int i = 1; i < (int)weekDay.DayOfWeek; i++)
                                 {
-                                    <td></td>
+                                        <td></td>
                                 }
-                                    if (RowTemplate is not null)
+
+                                    if (RowTemplate is null)
                                     {
-                                        <tr>@RowTemplate(weekDay)</tr>
-                                    } 
+                                        <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                    }
                                     else
                                     {
-                                        <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                        <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay">
+                                            @RowTemplate(weekDay)
+                                        </BCalenderDay>
                                     }
+
                             }
                             else
                             {
@@ -74,26 +78,32 @@
                                 {
                                     <td></td>
                                 }
-                                    if (RowTemplate is not null)
+
+                                    if (RowTemplate is null)
                                     {
-                                        <tr>@RowTemplate(weekDay)</tr>
+                                        <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
                                     }
                                     else
                                     {
-                                        <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                                        <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay">
+                                            @RowTemplate(weekDay)
+                                        </BCalenderDay>
                                     }
                             }
                         }
                         else
                         {
-                                if (RowTemplate is not null)
-                                {
-                                    <tr>@RowTemplate(weekDay)</tr>
-                                }
-                                else
-                                {
-                                    <BTableData Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
-                                }
+
+                            if (RowTemplate is null)
+                            {
+                                <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay" />
+                            }
+                            else
+                            {
+                                    <BCalenderDay Weekday="weekDay" SelectedDate="SelectedDate" WeekNumber="week.Key" OnDatePicked="ChooseDay">
+                                        @RowTemplate(weekDay)
+                                    </BCalenderDay>
+                            }
                         }
                     }
                 </tr>

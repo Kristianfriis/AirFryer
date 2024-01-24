@@ -7,6 +7,13 @@
 <BContent Padding="true">
     <BCalendar OnDatePicked="DatePicked" ElevatedDates="testDates">
 
+@*         <RowTemplate Context="Weekday">
+            <BRow>
+                <span>@Weekday.Day</span>
+                <BIcon Icon="@(Test(Weekday))" Size="1" FullWidth="true"/>
+            </BRow>
+        </RowTemplate> *@
+       
     </BCalendar>
 </BContent>
 
@@ -19,5 +26,14 @@
     private void DatePicked(DateTime value)
     {
         Console.WriteLine(value);
+    }
+
+    private string Test(DateTime date)
+    {
+        if (date.Date == DateTime.UtcNow.AddDays(-1).Date)
+        {
+            return "bi bi-check2-circle";
+        }
+        return "";
     }
 }

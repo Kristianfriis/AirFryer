@@ -1,12 +1,24 @@
 ﻿<td class="@ClassFactory()" @onclick="@(() => ChooseDay(Weekday.Year, Weekday.Month, WeekNumber, Weekday.Day))">
-    <span>
-        @Weekday.Day
-    </span>
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        <span>
+            @Weekday.Day
+        </span>
+    }
 </td>
 
 @code {
+    // [Parameter]
+    // public RenderFragment<DateTime>? Template { get; set; }
+
     [Parameter]
-    [EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
     public DateTime Weekday { get; set; }
 
     [Parameter]
